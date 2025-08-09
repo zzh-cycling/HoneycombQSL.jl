@@ -1,3 +1,7 @@
+# Hamiltonian is defined as H = -∑_i,j (X_i X_j + Y_i Y_j + Z_i Z_j), on a honeycomb lattice with periodic boundary conditions, where X, Y, Z are Pauli matrices acting on the spins at sites i and j. Here we use the parallelogram (or skewed-rectangle) cluster, tilted square cluster, rhombic cluster lattice arranging way, whatever you call it, to define the Hamiltonian.  Such arranging is easy to define the K-space, utilizing the translation symmetry of the honeycomb lattice.
+
+# Another way is using hexagonal (or honeycomb) cluster, diamond-shaped cluster, zig-zag cluster, which is born to be OBC. If PBC, we need to do twisted/skewed PBC or modular boundary condition.
+
 function honeycomb_strings(m::Int, n::Int, pbc::Bool=true)
 	li = reshape(LinearIndices((m, n)),(n,m))'
 	xstrings = Vector{Int}[]
