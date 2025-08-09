@@ -51,25 +51,25 @@ function kitaev_hamiltonian(m::Int, n::Int)
 	
 	l=2*m*n
 	H=zeros(Int64, 2^l, 2^l)
-	for i in xstrings
+	for string in xstrings
 		cup=fill(Id, l)
-		for j in i
+		for j in string
 			cup[j]=X
 		end
 		H-=foldr(⊗,cup)
 	end
 
-	for i in ystrings
+	for string in ystrings
 		cup=fill(Id, l)
-		for j in i
+		for j in string
 			cup[j]=Y
 		end
 		H+=foldr(⊗,cup)
 	end
 
-	for i in zstrings
+	for string in zstrings
 		cup=fill(Id, l)
-		for j in i
+		for j in string
 			cup[j]=Z
 		end
 		H-=foldr(⊗,cup)
@@ -88,34 +88,35 @@ function kitaev_hamiltonian_sparse(m::Int, n::Int)
     l = 2*m*n
     H = spzeros(2^l, 2^l)  # 使用复数矩阵
 
-    for sites in xstrings
+    for string in xstrings
         cup=fill(Id, l)
-		for j in sites
+		for j in string
 			cup[j]=σx
 		end
 		H-=foldr(⊗,cup)
     end
 
-    for sites in ystrings
+    for string in ystrings
         cup=fill(Id, l)
-		for j in sites
+		for j in string
 			cup[j]=σy
 		end
 		H+=foldr(⊗,cup)
     end
 
-    for sites in zstrings
+    for string in zstrings
         cup=fill(Id, l)
-		for j in sites
+		for j in string
 			cup[j]=σz
 		end
 		H-=foldr(⊗,cup)
     end
-
+	
     return H
 end
 
 function flux_path(i::Int, j::Int, m::Int, n::Int, pbc::Bool=true)
+	# First for PBC. m is the number of rows, n is the number of columns, i,j is the plaquette position (or cell.)
 	@assert(i in 1:m && j in 1:n)
 	li = reshape(LinearIndices((m, n)),(n,m))'
 	l=2*m*n
@@ -142,22 +143,24 @@ function flux_path(i::Int, j::Int, m::Int, n::Int, pbc::Bool=true)
 	return path .+1
 end
 
-function Wilson12(i::Int, j::Int, m::Int, n::Int)
-	# First for PBC. m is the number of rows, n is the number of columns, i,j is the plaquette position (or cell.)
-	@assert(i in 1:m && j in 1:n)
-	
+function Wilson12(m::Int, n::Int)
+	li = reshape(LinearIndices((m, n)),(n,m))'
 	l=2*m*n
 	σx = sparse([0 1; 1 0])
 	σy = sparse([0 -1; 1 0])  
 	σz = sparse([1 0; 0 -1]) 
 	Id = sparse([1 0; 0 1])
-	cup=fill(Id, l)
+	cup1=fill(Id, l)
+	cup2=fill(Id, l)
 
-	path = flux_path(i, j, m, n)
-	cup[path] = [σx, σy, σz, σz, σy, σx]
+	path1 = foldl(vcat, [[2*li[i,1]-2, 2*li[i, 1]-1] for i in 1:m]) .+1
+	path2 = foldl(vcat, [[2*li[1,j]-2, 2*li[1,j]-1] for j in 1:n]) .+1
+	cup1[path1] = vcat([σx], (-1)^(m-1)*fill(σz, 2*m-2), [σx])
+	cup2[path2] = vcat([σx], (-1)^(n-1)*fill(σy, 2*n-2), [σx])
 
-	wilson=foldr(⊗,cup)
-	return wilson
+	wilson1=foldr(⊗,cup1)
+	wilson2=foldr(⊗,cup2)
+	return wilson1, wilson2
 end
 
 function flux(i::Int, j::Int, m::Int, n::Int)
