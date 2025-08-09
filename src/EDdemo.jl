@@ -164,7 +164,7 @@ function Wilson12(m::Int, n::Int)
 end
 
 function flux(i::Int, j::Int, m::Int, n::Int)
-	# First for PBC. m is the number of rows, n is the number of columns, i,j is the plaquette position (or cell.)
+	# First for PBC. m is the number of rows, n is the number of columns, i,j is the plaquette position (or cell.).
 	@assert(i in 1:m && j in 1:n)
 	
 	l=2*m*n
@@ -175,12 +175,9 @@ function flux(i::Int, j::Int, m::Int, n::Int)
 	cup=fill(Id, l)
 
 	path = flux_path(i, j, m, n)
-	cup[path] = [σx, σy, σz, σz, σy, σx]
+	cup[path] = [-σx, σy, σz, σz, σy, σx]
 
 	flux=foldr(⊗,cup)
 	return flux
 end
 
-function majorana(m::Int, n::Int)
-	
-end
