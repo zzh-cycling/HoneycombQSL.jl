@@ -1,5 +1,7 @@
 using Test
 using HoneycombQSL
+using Arpack: eigs
+using LinearAlgebra
 
 @testset "flux_path" begin
     m=3;n=4
