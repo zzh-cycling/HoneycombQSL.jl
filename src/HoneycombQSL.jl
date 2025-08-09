@@ -1,5 +1,7 @@
 module HoneycombQSL
 
-# Write your package code here.
+using LinearAlgebra, SparseArrays, Random, Arpack, BitBasis
+export flux_path, kitaev_hamiltonian_sparse, Wilson12
 
+include("EDdemo.jl")
 end

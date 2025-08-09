@@ -1,6 +1,7 @@
 using HoneycombQSL
 using Test
 
-@testset "HoneycombQSL.jl" begin
+@testset "EDdemo.jl" begin
     # Write your tests here.
+    include("EDdemo.jl")
 end

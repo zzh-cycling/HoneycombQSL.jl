@@ -4,3 +4,5 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://zzh-cycling.github.io/HoneycombQSL.jl/dev/)
 [![Build Status](https://github.com/zzh-cycling/HoneycombQSL.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/zzh-cycling/HoneycombQSL.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/zzh-cycling/HoneycombQSL.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/zzh-cycling/HoneycombQSL.jl)
+
+A julia package utilizing ED, TN, QMC to compute honeycomb model for seeking Quantum Spin Liquid.
