@@ -34,12 +34,12 @@ end
     commutatorlis = [norm(H*fllis[i,j] - fllis[i,j]*H) for i in 1:m, j in 1:n]
     @test all(commutatorlis .< 1e-10)
 
-    # Wilson1, Wilson2
+    # Wilson1, Wilson2, is the reason 4-fold degeneracy, by check the minus sign in "vcat([σx], (-1)^(m-1)*fill(σz, 2*m-2), [σx])", you can find why some cluster do not have 4-fold degeneracy.
     wilson1, wilson2 = Wilson12(m, n)
-    gs0'*wilson1*gs0 ≈ 1
-    gs1'*wilson1*gs1 ≈ 1
-    gs2'*wilson1*gs2 ≈ 1
-    gs0'*wilson2*gs0 ≈ 1
-    gs1'*wilson2*gs1 ≈ 1
-    gs2'*wilson2*gs2 ≈ 1
+    @test gs0'*wilson1*gs0 ≈ 1
+    @test gs1'*wilson1*gs1 ≈ 1
+    @test gs2'*wilson1*gs2 ≈ 1
+    @test gs0'*wilson2*gs0 ≈ 1
+    @test gs1'*wilson2*gs1 ≈ 1
+    @test gs2'*wilson2*gs2 ≈ 1
 end
