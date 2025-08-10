@@ -1,7 +1,7 @@
 module HoneycombQSL
 
 using LinearAlgebra, SparseArrays, Random, Arpack, BitBasis
-export flux_path, kitaev_hamiltonian_sparse, Wilson12, flux, honeycomb_strings
+export kitaev_hamiltonian_sparse, wilson12, loop_path, loop_op, honeycomb_strings
 
 include("EDdemo.jl")
 end
