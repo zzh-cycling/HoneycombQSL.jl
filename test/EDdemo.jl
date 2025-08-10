@@ -3,6 +3,24 @@ using HoneycombQSL
 using Arpack: eigs
 using LinearAlgebra
 
+@testset "honeycomb_strings" begin
+    m = 3
+    n = 4
+    xstrings, ystrings, zstrings = honeycomb_strings(m, n)
+    
+    @test ystrings == [[1,2],[3,4], [5,6], [7,8], [9,10], [11,12], [13,14], [15,16], [17,18], [19,20], [21,22], [23,24]]
+    @test xstrings == [[2, 9], [4, 11], [6, 13], [8, 15], [10, 17], [12, 19], [14, 21], [16, 23], [18, 1], [20, 3], [22, 5], [24, 7]]
+    @test zstrings == [[2, 3], [4, 5], [6, 7], [10, 11], [12, 13], [14, 15], [18, 19], [20, 21], [22, 23], [1, 8], [9, 16], [17, 24]]
+
+    m = 2
+    n = 4
+    xstrings, ystrings, zstrings = honeycomb_strings(m, n, cluster=:hexagonal)
+
+    # @test ystrings == [[1,2],[3,4], [5,6], [7,8], [9,10], [11,12], [13,14], [15,16], [17,18], [19,20], [21,22], [23,24]]
+    # @test xstrings == [[2, 9], [4, 11], [6, 13], [8, 15], [10, 17], [12, 19], [14, 21], [16, 23], [18, 1], [20, 3], [22, 5], [24, 7]]
+    # @test zstrings == [[2, 3], [4, 5], [6, 7], [10, 11], [12, 13], [14, 15], [18, 19], [20, 21], [22, 23], [1, 8], [9, 16], [17, 24]]
+end
+
 @testset "flux_path" begin
     m=3;n=4
     @test flux_path(1,1,m,n) ==([1, 2, 3, 8, 9, 10] .+1)
@@ -43,3 +61,4 @@ end
     # @test gs1'*wilson2*gs1 ≈ 1
     # @test gs2'*wilson2*gs2 ≈ 1
 end
+

@@ -2,39 +2,45 @@
 
 # Another way is using hexagonal (or honeycomb) cluster, diamond-shaped cluster, zig-zag cluster, which is born to be OBC. If PBC, we need to do twisted/skewed PBC or modular boundary condition.
 
-function honeycomb_strings(m::Int, n::Int, pbc::Bool=true)
+function honeycomb_strings(m::Int, n::Int, pbc::Bool=true; cluster::Symbol= :rhombic)
+	@assert cluster in [:rhombic, :tilted_square, :parallelogram, :hexagonal, :zigzag]
 	li = reshape(LinearIndices((m, n)),(n,m))'
 	xstrings = Vector{Int}[]
 	ystrings = Vector{Int}[]
 	zstrings = Vector{Int}[]
 
-	for i=1:m, j=1:n
-		label = li[i, j]
-		push!(xstrings, [2*label-1,2*label])
-	end
-	for i=1:m-1, j=1:n
-		label1= li[i, j]
-		label2= li[i+1, j]
-		push!(ystrings, [2*label1, 2*label2-1])	
-	end
-	for i=1:m, j=1:n-1
-		label1 = li[i, j]
-		label2 = li[i, j+1]
-		push!(zstrings, [2*label1, 2*label2-1])
-	end
-
-	if pbc
-		for j=1:n
-			label1= li[m, j]
-			label2 = li[1, j]
-			push!(ystrings, [2*label1, 2*label2-1])
+	if cluster ∈ [:rhombic, :tilted_square, :parallelogram]
+		# Rhombic cluster, tilted square cluster, parallelogram cluster
+		for i=1:m, j=1:n
+			label = li[i, j]
+			push!(ystrings, [2*label-1,2*label])
 		end
-
-		for i=1:m
-			label1= li[i, 1]
-			label2 = li[i, n]
-			push!(zstrings, [2*label1-1, 2*label2])
+		for i=1:m-1, j=1:n
+			label1= li[i, j]
+			label2= li[i+1, j]
+			push!(xstrings, [2*label1, 2*label2-1])	
 		end
+		for i=1:m, j=1:n-1
+			label1 = li[i, j]
+			label2 = li[i, j+1]
+			push!(zstrings, [2*label1, 2*label2-1])
+		end
+	
+		if pbc
+			for j=1:n
+				label1= li[m, j]
+				label2 = li[1, j]
+				push!(xstrings, [2*label1, 2*label2-1])
+			end
+	
+			for i=1:m
+				label1= li[i, 1]
+				label2 = li[i, n]
+				push!(zstrings, [2*label1-1, 2*label2])
+			end
+		end
+	else
+
 	end
 
 	return xstrings, ystrings, zstrings
@@ -80,9 +86,9 @@ end
 function kitaev_hamiltonian_sparse(m::Int, n::Int)
     xstrings, ystrings, zstrings = honeycomb_strings(m, n)
     
-    σx = sparse([0 1; 1 0])
-    σy = sparse([0 -1; 1 0])  
-    σz = sparse([1 0; 0 -1]) 
+    X = sparse([0 1; 1 0])
+    Y = sparse([0 -1; 1 0])  
+    Z = sparse([1 0; 0 -1]) 
     Id = sparse([1 0; 0 1])
     
     l = 2*m*n
@@ -91,7 +97,7 @@ function kitaev_hamiltonian_sparse(m::Int, n::Int)
     for string in xstrings
         cup=fill(Id, l)
 		for j in string
-			cup[j]=σx
+			cup[j]=X
 		end
 		H-=foldr(⊗,cup)
     end
@@ -99,7 +105,7 @@ function kitaev_hamiltonian_sparse(m::Int, n::Int)
     for string in ystrings
         cup=fill(Id, l)
 		for j in string
-			cup[j]=σy
+			cup[j]=Y
 		end
 		H+=foldr(⊗,cup)
     end
@@ -107,7 +113,7 @@ function kitaev_hamiltonian_sparse(m::Int, n::Int)
     for string in zstrings
         cup=fill(Id, l)
 		for j in string
-			cup[j]=σz
+			cup[j]=Z
 		end
 		H-=foldr(⊗,cup)
     end
@@ -146,17 +152,17 @@ end
 function Wilson12(m::Int, n::Int)
 	li = reshape(LinearIndices((m, n)),(n,m))'
 	l=2*m*n
-	σx = sparse([0 1; 1 0])
-	σy = sparse([0 -1; 1 0])  
-	σz = sparse([1 0; 0 -1]) 
+	X = sparse([0 1; 1 0])
+	Y = sparse([0 -1; 1 0])  
+	Z = sparse([1 0; 0 -1]) 
 	Id = sparse([1 0; 0 1])
 	cup1=fill(Id, l)
 	cup2=fill(Id, l)
 
 	path1 = foldl(vcat, [[2*li[i,1]-2, 2*li[i, 1]-1] for i in 1:m]) .+1
 	path2 = foldl(vcat, [[2*li[1,j]-2, 2*li[1,j]-1] for j in 1:n]) .+1
-	cup1[path1] = vcat([σx], (-1)^(m-1)*fill(σz, 2*m-2), [σx])
-	cup2[path2] = vcat([σx], (-1)^(n-1)*fill(σy, 2*n-2), [σx])
+	cup1[path1] = vcat([X], (-1)^(m-1)*fill(Z, 2*m-2), [X])
+	cup2[path2] = vcat([X], (-1)^(n-1)*fill(Y, 2*n-2), [X])
 
 	wilson1=foldr(⊗,cup1)
 	wilson2=foldr(⊗,cup2)
@@ -168,14 +174,15 @@ function flux(i::Int, j::Int, m::Int, n::Int)
 	@assert(i in 1:m && j in 1:n)
 	
 	l=2*m*n
-	σx = sparse([0 1; 1 0])
-    σy = sparse([0 -1; 1 0])  
-    σz = sparse([1 0; 0 -1]) 
+	X = sparse([0 1; 1 0])
+    Y = sparse([0 -1; 1 0])  
+    Z = sparse([1 0; 0 -1]) 
     Id = sparse([1 0; 0 1])
 	cup=fill(Id, l)
 
+	# Here we use YY definition, which is different from Y, has a additional minus sign. W = -Y1 X2 Z3 Y10 X9 Z8
 	path = flux_path(i, j, m, n)
-	cup[path] = [-σx, σy, σz, σz, σy, σx]
+	cup[path] = [-Y, X, Z, Z, X, Y]
 
 	flux=foldr(⊗,cup)
 	return flux
