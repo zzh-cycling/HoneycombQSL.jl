@@ -20,3 +20,11 @@ end
 
 loop_val_lis24 = check_Wp(2,4)
 loop_val_lis33 = check_Wp(3,3)
+
+Wp1 = loop_op(1, 1, 3, 3)
+
+# NEED to nothing that it seems the loop value is not all 1 or -1, just because of the degeneracy.
+stlis = vecs[:, 4:12]
+newWp1 = stlis'*Wp1 * stlis
+
+eigvals(newWp1)

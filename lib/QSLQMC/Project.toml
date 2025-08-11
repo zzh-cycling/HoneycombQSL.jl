@@ -1,0 +1,4 @@
+name = "QSLQMC"
+uuid = "d1db2885-8402-4c62-b5cf-606ae39e5874"
+authors = ["Zhaohui Zhi <2276780832@qq.com>"]
+version = "0.1.0"

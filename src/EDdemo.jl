@@ -51,6 +51,11 @@ function kagome_strings(m::Int, n::Int, pbc::Bool=true; cluster::Symbol= :rhombi
 	error("Kagome lattice strings not implemented yet.")
 end
 
+function triangular_strings(m::Int, n::Int, pbc::Bool=true; cluster::Symbol= :rhombic)
+	# Triangular lattice strings, not implemented yet.
+	error("Triangular lattice strings not implemented yet.")
+end
+
 ⊗(A::AbstractArray, B::AbstractArray) = kron(A, B)
 
 function kitaev_hamiltonian(m::Int, n::Int)
