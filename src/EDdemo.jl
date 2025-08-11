@@ -46,6 +46,11 @@ function honeycomb_strings(m::Int, n::Int, pbc::Bool=true; cluster::Symbol= :rho
 	return xstrings, ystrings, zstrings
 end
 
+function kagome_strings(m::Int, n::Int, pbc::Bool=true; cluster::Symbol= :rhombic)
+	# Kagome lattice strings, not implemented yet.
+	error("Kagome lattice strings not implemented yet.")
+end
+
 ⊗(A::AbstractArray, B::AbstractArray) = kron(A, B)
 
 function kitaev_hamiltonian(m::Int, n::Int)
@@ -107,6 +112,43 @@ function kitaev_hamiltonian_sparse(m::Int, n::Int)
     end
 	
     return H
+end
+
+function Heisenberg_hamiltonian_sparse(m::Int, n::Int; lattice::Symbol=:honeycomb)
+	# Heisenberg Hamiltonian for kagome and honeycomb lattice
+	if lattice == :honeycomb
+		xstrings, ystrings, zstrings = honeycomb_strings(m, n)
+	elseif lattice == :kagome
+		xstrings, ystrings, zstrings = kagome_strings(m, n)
+	end
+
+	X = sparse([0 1; 1 0])
+	Y = sparse([0 -1; 1 0])
+	Z = sparse([1 0; 0 -1])
+	Id = sparse([1 0; 0 1])
+
+	l = 2*m*n
+	H = spzeros(2^l, 2^l)  
+
+	for strings in xstrings
+		cup=fill(Id, l)
+		cup[(strings .+1)] = fill(X, 2)
+		H+=foldr(⊗,cup)
+	end
+
+	for strings in ystrings
+		cup=fill(Id, l)
+		cup[(strings .+1)] = fill(Y, 2)
+		H+=foldr(⊗,cup)
+	end
+
+	for strings in zstrings
+		cup=fill(Id, l)
+		cup[(strings .+1)] = fill(Z, 2)
+		H+=foldr(⊗,cup)
+	end
+
+	return H
 end
 
 function loop_path(i::Int, j::Int, m::Int, n::Int, pbc::Bool=true)

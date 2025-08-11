@@ -10,6 +10,19 @@ function honeycomb_basis(m::Int,n::Int, Wplis::Vector{Int}=Int[]; spin::Float64=
     end
 end
 
+function kagome_basis(m::Int, n::Int, Wplis::Vector{Int}=Int[]; spin::Float64=0.5)
+    # Generate the basis for the kagome lattice Kitaev model for spin spin.
+    # m: number of rows, n: number of columns
+    l = 2 * m * n  # total number of spins
+    d = round(Int, 2*spin+1)  # dof
+    if isempty(Wplis)
+        return [DitStr{d, l}(i) for i in 0:2^l-1]
+    else
+        return [DitStr{d, l}(i) for i in 0:2^l-1 if all(x -> x in Wplis, BitBasis.bitstring(i, l))]
+    end
+    
+end
+
 function honeycomb_basis(m::Int,n::Int, Wplis::Vector{Int}, k::Vector{Int}, spin::Float64=0.5)
     # k is the momentum space basis.
     l = 2 * m * n  # total number of spins
