@@ -1,4 +1,4 @@
-module HoneycombQSL
+module LatticeQSL
 
 using LinearAlgebra, SparseArrays, Random, Arpack, BitBasis
 

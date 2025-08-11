@@ -1,4 +1,4 @@
-using HoneycombQSL
+using LatticeQSL
 using SparseArrays, LinearAlgebra, Arpack
 
 # Define the Hamiltonian H, total sites L, etc.

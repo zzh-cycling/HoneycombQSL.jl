@@ -1,5 +1,5 @@
 using Test
-using HoneycombQSL
+using LatticeQSL
 using Arpack: eigs
 using LinearAlgebra
 

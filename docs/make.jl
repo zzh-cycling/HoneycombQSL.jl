@@ -1,14 +1,14 @@
-using HoneycombQSL
+using LatticeQSL
 using Documenter
 
-DocMeta.setdocmeta!(HoneycombQSL, :DocTestSetup, :(using HoneycombQSL); recursive=true)
+DocMeta.setdocmeta!(LatticeQSL, :DocTestSetup, :(using LatticeQSL); recursive=true)
 
 makedocs(;
-    modules=[HoneycombQSL],
+    modules=[LatticeQSL],
     authors="Zhaohui Zhi",
-    sitename="HoneycombQSL.jl",
+    sitename="LatticeQSL.jl",
     format=Documenter.HTML(;
-        canonical="https://zzh-cycling.github.io/HoneycombQSL.jl",
+        canonical="https://zzh-cycling.github.io/LatticeQSL.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -18,6 +18,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/zzh-cycling/HoneycombQSL.jl",
+    repo="github.com/zzh-cycling/LatticeQSL.jl",
     devbranch="main",
 )

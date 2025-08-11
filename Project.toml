@@ -1,5 +1,5 @@
-name = "HoneycombQSL"
-uuid = "06fdea41-636b-48be-a95e-40b674a73b2c"
+name = "LatticeQSL"
+uuid = "2ecf8e3c-c899-4a7d-bb2d-d4112d8aef39"
 authors = ["Zhaohui Zhi"]
 version = "1.0.0-DEV"
 

@@ -1,4 +1,4 @@
-using HoneycombQSL, SparseArrays, LinearAlgebra, Arpack
+using LatticeQSL, SparseArrays, LinearAlgebra, Arpack
 using JLD
 
 m=3
