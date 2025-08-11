@@ -4,3 +4,14 @@
 /Manifest*.toml
 /docs/Manifest*.toml
 /docs/build/
+/exm/data/
+/exm/fig/
+job-*.txt
+resource_usage.log
+nohup.out
+.log
+logs/*.log
+*.jld2
+*.jld
+*.h5
+*.hdf5

@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = HoneycombQSL
+CurrentModule = LatticeQSL
 ```
 
-# HoneycombQSL
+# LatticeQSL
 
-Documentation for [HoneycombQSL](https://github.com/zzh-cycling/HoneycombQSL.jl).
+Documentation for [LatticeQSL](https://github.com/zzh-cycling/LatticeQSL.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [HoneycombQSL]
+Modules = [LatticeQSL]
 ```

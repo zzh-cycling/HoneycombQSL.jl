@@ -72,6 +72,6 @@ jobs:
         shell: julia --project=docs --color=yes {0}
         run: |
           using Documenter: DocMeta, doctest
-          using HoneycombQSL
-          DocMeta.setdocmeta!(HoneycombQSL, :DocTestSetup, :(using HoneycombQSL); recursive=true)
-          doctest(HoneycombQSL)
+          using LatticeQSL
+          DocMeta.setdocmeta!(LatticeQSL, :DocTestSetup, :(using LatticeQSL); recursive=true)
+          doctest(LatticeQSL)

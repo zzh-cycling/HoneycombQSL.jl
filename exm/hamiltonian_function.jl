@@ -1,4 +1,4 @@
-using HoneycombQSL
+using LatticeQSL
 # Assuming you have the necessary parameters and functions defined
 L = 100  # Example number of lattice sites
 x_neighbors = [(0, 1), (1, 2)]  # Example neighbors for x-bonds

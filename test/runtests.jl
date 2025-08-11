@@ -1,4 +1,4 @@
-using HoneycombQSL
+using LatticeQSL
 using Test
 
 @testset "EDdemo.jl" begin

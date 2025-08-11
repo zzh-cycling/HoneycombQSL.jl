@@ -1,58 +1,3 @@
-function tern_to_base10(state::T) where {N,T<:DitStr64{3, N}}
-    """
-    Converts a ternary string to a base-10 integer.
-
-    Parameters
-    ----------
-    state : String
-        A string representing a number in ternary.
-
-    Returns
-    -------
-    integer_rep : Int
-        The base-10 integer corresponding to the ternary string.
-    """
-    return state.buf
-end
-
-function ternary(n::Int)
-    """
-    Converts a base-10 integer to a ternary string.
-
-    Parameters
-    ----------
-    n : Int
-        A base-10 integer.
-
-    Returns
-    -------
-    String
-        A string representing an integer in ternary.
-    """
-   return DitStr{3}(n)
-end
-
-function ternary_pad(n::Int, L::Int)
-    """
-    Converts a base-10 integer to a ternary string of length L.
-    Will left-pad ternary string with zeros such that the string has length L.
-
-    Parameters
-    ----------
-    n : Int
-        A base-10 integer.
-    L : Int
-        Desired total length of ternary string. The string will be left-padded with zeros to have length L.
-
-    Returns
-    -------
-    String
-        A string of length L representing an integer in ternary.
-    """
-    padded = DitStr{3,L}(n)
-    return padded
-end
-
 function lattice_translations(Lx::Int, Ly::Int)
     """
     For a specified honeycomb lattice (with Lx unit cells in the x-direction, and Ly units cells in the y-direction),
@@ -100,10 +45,10 @@ function lattice_translations(Lx::Int, Ly::Int)
         end
     end
 
-    return translation_order_list[2:end]  # Return all non-zero translations of lattice
+    return translation_order_list[2:end], unit_cells  # Return all non-zero translations of lattice
 end
 
-function mirror_states(state::String, translation_order_list::Vector{Vector{Int}})
+function mirror_states(state::T, translation_order_list::Vector{Vector{Int}}) where {d, N, T <: DitStr{d, N, Int}}
     """
     For a single state represented by a ternary string, this function finds all equivalent 'mirror' states
     related by symmetry, and their base-10 integer representation. The state with the smallest base-10 integer
@@ -132,12 +77,12 @@ function mirror_states(state::String, translation_order_list::Vector{Vector{Int}
     rev_state = reverse(state)
 
     state_translations = [state]
-    state_translation_ints = [tern_to_base10(state)]
+    state_translation_ints = [state.buf]
 
     for ordering in translation_order_list
         translated_state = join(rev_state[i] for i in ordering)
         push!(state_translations, reverse(translated_state))
-        push!(state_translation_ints, tern_to_base10(reverse(translated_state)))
+        push!(state_translation_ints, reverse(translated_state).buf)
     end
 
     state_inversions = []
@@ -145,7 +90,7 @@ function mirror_states(state::String, translation_order_list::Vector{Vector{Int}
 
     for s in state_translations
         push!(state_inversions, reverse(s))
-        push!(state_inversion_ints, tern_to_base10(reverse(s)))
+        push!(state_inversion_ints, reverse(s).buf)
     end
 
     mirror_ints = vcat(state_translation_ints, state_inversion_ints)
@@ -153,12 +98,12 @@ function mirror_states(state::String, translation_order_list::Vector{Vector{Int}
     n_unique = length(unique(sorted_ints))
 
     rep_int = sorted_ints[1]
-    rep_state = ternary_pad(rep_int, L)
+    rep_state = T(rep_int)
 
     return sorted_ints, n_unique, rep_state, rep_int
 end
 
-function get_representative_states(L::Int, translation_order_list::Vector{Vector{Int}}, ints_filename::String="kept_ints", states_filename::String="state_map", nunique_filename::String="n_unique_list")
+function get_representative_states(L::Int, translation_order_list::Vector{Vector{Int}}, ints_filename::String="kept_ints", states_filename::String="state_map", nunique_filename::String="n_unique_list") where {d, N, T <: DitStr{d,L,Int}}
     """
     For a lattice with L sites and therefore 3^L possible configurations, this function finds all the representative
     states we need to keep, thus reducing the Hilbert space dimension from 3^L to a much smaller number ndim.
@@ -207,7 +152,7 @@ function get_representative_states(L::Int, translation_order_list::Vector{Vector
         index += 1
         push!(kept_ints, i)
 
-        mirror_ints, n_unique, rep_state, rep_int = mirror_states(ternary_pad(i, L), translation_order_list)
+        mirror_ints, n_unique, rep_state, rep_int = mirror_states(T(i), translation_order_list)
 
         for j in mirror_ints
             state_map[j + 1] = index  # Adjust for 1-based indexing
