@@ -31,6 +31,7 @@ function _generate_sites(lattice_vectors, lattice_sites, repeats::Vararg{Int,D};
     for ci in CartesianIndices(repeats)
         baseloc = mapreduce(i -> (ci.I[i] - 1) .* lattice_vectors[i], (x, y) -> x .+ y, 1:D)
         for siteloc in lattice_sites
+            @show baseloc, siteloc
             push!(locations, (baseloc .+ siteloc) .* scale)
         end
     end
@@ -41,21 +42,33 @@ end
     Lattice{D,K,T} <: AbstractLattice{D}
     Lattice(vectors, sites)
 
-The general lattice type for tiling the space. Type parameter `D` is the dimension,
+The general lattice type for tiling the space, where translation symmetry is assumed. Type parameter `D` is the dimension,
 `K` is the number of sites in a unit cell and `T` is the data type for coordinates, e.g. `Float64`. Input arguments are
 
 * `vectors` is a vector/tuple of D-tuple. Its length is D, it specifies the Bravais lattice vectors.
 * `sites` is a vector/tuple of D-tuple. Its length is K, it specifies the sites inside a Bravais cell.
+* `reciprocal_vectors` is a vector/tuple of D-tuple. Its length is D, it specifies the reciprocal lattice vectors.
+* `reciprocal_sites` is a vector/tuple of D-tuple. Its length is K, it specifies the sites inside a reciprocal sites of Bravais cell.
 """
 struct Lattice{D,K,T} <: AbstractLattice{D}
     vectors::NTuple{D,NTuple{D,T}}
     sites::NTuple{K,NTuple{D,T}}
+    reciprocal_vectors::NTuple{D,NTuple{D,T}} 
+    reciprocal_sites::NTuple{K,NTuple{D,T}}
     function Lattice(vectors::NTuple{D}, sites::NTuple{K}) where {D,K}
         if D == 0 || K == 0
             error("Lattice requires at least one vector and one site")
         end
         T = promote_type(_datatype(vectors), _datatype(sites))
-        return new{D,K,T}(vectors, sites)
+
+        M = reduce(hcat, [collect(v) for v in vectors])   # basis matrix
+        invM = inv(M)'                             
+        b = ntuple(i -> Tuple(invM[:, i]), Val(D))   # convert to NTuple{D,T}
+
+        τ = 2π
+        rsts = ntuple(k -> Tuple(τ .* (invM * collect(sites[k]))), Val(K))
+        
+        return new{D,K,T}(vectors, sites, b, rsts)
     end
 end
 _datatype(x::Tuple) = promote_type(_datatype.(x)...)
@@ -68,6 +81,7 @@ Lattice(vectors, sites) = Lattice((Tuple.(vectors)...,), (Tuple.(sites)...,))
 Returns Bravais lattice vectors as a D-Tuple of D-Tuple, where D is the space dimension.
 """
 lattice_vectors(lattice::Lattice) = lattice.vectors
+reciprocal_lattice_vector(lattice::Lattice) = lattice.vectors
 
 """
     lattice_sites(lattice::AbstractLattice)
@@ -75,6 +89,8 @@ lattice_vectors(lattice::Lattice) = lattice.vectors
 Returns sites in a Bravais lattice unit cell as a Tuple of D-Tuple, where D is the space dimension.
 """
 lattice_sites(lattice::Lattice) = lattice.sites
+reciprocal_lattice_site(lattice::Lattice) = lattice.sites
+
 
 """
     struct HoneycombLattice <: AbstractLattice{2}
