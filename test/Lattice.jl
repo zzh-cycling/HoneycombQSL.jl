@@ -19,7 +19,7 @@ end
         KagomeLattice(),
         GeneralLattice(((1.0, 0.0), (0.0, 1.0)), [(0.0, 0.0)]),
     ]
-        @test BloqadeLattices.dimension(LT) == 2
+        @test LatticeQSL.dimension(LT) == 2
         @test generate_sites(LT, 5, 5) |> length == length(lattice_sites(LT)) * 25
     end
     lt1 = generate_sites(ChainLattice(), 5)
